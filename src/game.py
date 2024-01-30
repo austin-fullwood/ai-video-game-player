@@ -1,15 +1,24 @@
-#!/usr/bin/env python3
+#! python3
 
 import math
 import pygame
 import random
 
-
+"""
+Runs the simulation.
+"""
 class Game:
-    PLAYER_SIZE = 40
-    FOOD_SIZE = 20
+    # Constants
+    PLAYER_SIZE: int = 40
+    FOOD_SIZE: int = 20
 
-    def __init__(self, is_human=True) -> None:
+    """
+    Initializes the game.
+
+    Args:
+        is_human (bool): Whether or not the game is being played by a human.
+    """
+    def __init__(self, is_human: bool=True) -> None:
         self.is_human = is_human
         self.screen = pygame.display.set_mode((500, 500))
         self.player = pygame.Rect(
@@ -31,13 +40,25 @@ class Game:
         self.clock = pygame.time.Clock()
         self.frames = 0
 
-        # self.action_space = ["up", "down", "left", "right"]
-        self.action_space = [0, 1, 2, 3]
+        self.action_space = [0, 1, 2, 3] # ["up", "down", "left", "right"]
 
+    """
+    Stops game on deletion.
+    """
     def __del__(self) -> None:
         pygame.quit()
 
-    def step(self, action=None) -> list | int | bool:
+    """
+    Runs one step of the game.
+
+    Args:
+        action (int): The action taken by the player (human or non-human).
+    Returns:
+        list: The state of the game.
+        int: The reward for the action taken.
+        bool: Whether or not the game is over.
+    """
+    def step(self, action: int=None) -> (list, int, bool):
         if self.is_human and action == None:
             action = self.__human_action()
         elif action not in self.action_space:
@@ -58,7 +79,7 @@ class Game:
         self.screen.fill("purple")
         pygame.display.set_caption(f"Total Points: {self.score}")
 
-        if self.check_food_ate():
+        if self.__check_food_ate():
             self.food.x, self.food.y = self.__food_spawn()
             self.score += 1
             reward = 1000
@@ -107,6 +128,12 @@ class Game:
 
         return self.__grab_screen(), reward, self.__is_done()
 
+    """
+    Restarts the game.
+
+    Returns:
+        list: The state of the game.
+    """
     def reset(self) -> list:
         self.frames = 0
         self.score = 0
@@ -118,9 +145,21 @@ class Game:
 
         return self.__grab_screen()
 
-    def __is_done(self):
+    """
+    Checks if the game is over.
+
+    Returns:
+        bool: Whether or not the game is over.
+    """
+    def __is_done(self) -> bool:
         return self.frames >= 1000
 
+    """
+    Gets the action taken by the human player.
+
+    Returns:
+        int: The action taken by the human player.
+    """
     def __human_action(self) -> int:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
@@ -135,11 +174,26 @@ class Game:
             return 4
         return None
 
+    """
+    Gets the state of the game.
+
+    Returns:
+        list: The state of the game.
+    """
     def __grab_screen(self) -> list:
+         # State of the game in pixels
         # return pygame.surfarray.array2d(self.screen).flatten()
+
         return [self.player.x, self.player.y, self.food.x, self.food.y]
 
-    def __food_spawn(self) -> int | int:
+    """
+    Spawns food in a random location.
+
+    Returns:
+        int: The x of the food.
+        int: The y of the food.
+    """
+    def __food_spawn(self) -> (int, int):
         y_exclude = [i for i in range(self.player.top, self.player.bottom)]
         x_exclude = [i for i in range(self.player.left, self.player.right)]
         y = random.choice(
@@ -151,9 +205,18 @@ class Game:
 
         return x, y
 
-    def check_food_ate(self) -> bool:
+    """
+    Checks if the food was eaten.
+
+    Returns:
+        bool: Whether or not the food was eaten.
+    """
+    def __check_food_ate(self) -> bool:
         return self.player.colliderect(self.food)
 
+"""
+Plays the game with a human player.
+"""
 if __name__ == "__main__":
     game = Game()
     while(True):

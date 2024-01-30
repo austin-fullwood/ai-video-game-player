@@ -1,0 +1,8 @@
+# Ignore saved models
+models/
+
+# Ignore python cache
+__pycache__/
+
+# Ignore hidden files
+.DS_Store
