@@ -33,7 +33,7 @@ pip install -r requirements.txt
 ## Train the model
 To train the model, run:
 ```
-python ./src/main.py
+python ./src/trainer.py
 ```
 
 This will open up a single window with the game. A second window will after the first epoch with a graph of the model's performance for each epoch.
